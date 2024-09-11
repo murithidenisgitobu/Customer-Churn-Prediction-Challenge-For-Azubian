@@ -1,5 +1,0 @@
-# Ignore the Train.csv file in the Data folder
-Data/Train.csv
-
-# Ignore the virtual environment folder
-project_venv/
