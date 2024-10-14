@@ -89,16 +89,23 @@ async def predict_churn(model: Literal['xgboost', 'logistic_regression'], featur
         # Select model based on the user's choice
         if model == 'xgboost':
             prediction = xgboost.predict(input_data)[0]
+            probabilities = xgboost.predict_proba(input_data)[0]
         elif model == 'logistic_regression':
             prediction = logistic_regression.predict(input_data)[0]
+            probabilities = logistic_regression.predict_proba(input_data)[0]
         else:
             raise ValueError("Invalid model specified")
 
+        # Get the probability of the predicted outcome
+        probability = probabilities[prediction]
+
         logger.info(f"Prediction result: {prediction}")
+        logger.info(f"Prediction probability: {probability}")
 
         return {
             "model": model,
-            "prediction": int(prediction)
+            "prediction": "Churn" if prediction == 1 else "Stay",
+            "probability": float(probability)
         }
     except ValueError as ve:
         logger.error(f"ValueError in predict_churn: {str(ve)}")
