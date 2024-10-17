@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import Literal
+from pydantic import BaseModel, Field
+from typing import Literal, Optional
 import joblib
 from fastapi.responses import PlainTextResponse
 import os
@@ -47,6 +47,7 @@ def read_root():
 
 # Load models
 try:
+    # Update the model path to use os.path.join correctly
     xgb_path = os.path.join('..', 'Models Directory', 'xgb_model.joblib')
     lr_path = os.path.join('..', 'Models Directory', 'lr_model.joblib')
 
@@ -58,32 +59,32 @@ except Exception as e:
     raise HTTPException(status_code=500, detail="Error loading models")
 
 class CustomerData(BaseModel):
-    REGION: str
-    MRG: str
-    TOP_PACK: str
-    TENURE: str
-    MONTANT: float
-    FREQUENCE_RECH: int
-    REVENUE: float
-    ARPU_SEGMENT: float
-    FREQUENCE: int
-    DATA_VOLUME: float
-    ON_NET: int
-    ORANGE: int
-    TIGO: int
-    ZONE1: int
-    ZONE2: int
-    REGULARITY: int
-    FREQ_TOP_PACK: int
+    REGION: Optional[str] = Field(default=None)
+    MRG: Optional[str] = Field(default=None)
+    TOP_PACK: Optional[str] = Field(default=None)
+    TENURE: Optional[str] = Field(default=None)
+    MONTANT: Optional[float] = Field(default=None)
+    FREQUENCE_RECH: Optional[float] = Field(default=None)
+    REVENUE: Optional[float] = Field(default=None)
+    ARPU_SEGMENT: Optional[float] = Field(default=None)
+    FREQUENCE: Optional[float] = Field(default=None)
+    DATA_VOLUME: Optional[float] = Field(default=None)
+    ON_NET: Optional[float] = Field(default=None)
+    ORANGE: Optional[float] = Field(default=None)
+    TIGO: Optional[float] = Field(default=None)
+    ZONE1: Optional[float] = Field(default=None)
+    ZONE2: Optional[float] = Field(default=None)
+    REGULARITY: Optional[int] = Field(default=None)
+    FREQ_TOP_PACK: Optional[float] = Field(default=None)
 
-@app.post("/Predict/")
+@app.post("/predict")
 async def predict_churn(model: Literal['xgboost', 'logistic_regression'], features: CustomerData):
     logger.info(f"Received prediction request for model: {model}")
     logger.debug(f"Input features: {features}")
 
     try:
         # Convert input features to a pandas DataFrame
-        input_data = pd.DataFrame([features.dict()])
+        input_data = pd.DataFrame([features.dict(exclude_none=True)])  # Exclude None values
         logger.debug(f"Processed input data: {input_data}")
 
         # Select model based on the user's choice
