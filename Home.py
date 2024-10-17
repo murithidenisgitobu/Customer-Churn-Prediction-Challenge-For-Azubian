@@ -1,8 +1,9 @@
-# app.py
+# app.py (Home/Main page)
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
 from streamlit_extras.colored_header import colored_header
+from utils import add_logout_button
 
 # Set page config
 st.set_page_config(page_title="Customer Churn Prediction App", layout="wide")
@@ -30,11 +31,16 @@ if not st.session_state['logged_in']:
             st.session_state['authentication_status'] = True
             st.session_state['logged_in'] = True
             st.success("Logged in successfully!")
+            st.rerun()
         else:
             st.error("Invalid username or password. Please try again.")
-else:
-    # If logged in, display the dashboard
-    st.title("Customer Churn Prediction Dashboard")
+
+# If logged in, display the dashboard
+if st.session_state['logged_in']:
+    # Add logout button
+    add_logout_button()
+
+    st.title("Customer Churn Prediction Home Page")
     colored_header(
         label="Customer Churn Prediction Dashboard",
         description="Predict the likelihood of a customer churning and plan retention strategies",
@@ -51,8 +57,8 @@ else:
     2. **Logistic Regression**: A statistical method for predicting binary outcomes.
     
     Our models analyze various customer attributes to determine the likelihood of churn, 
-                helping the company take proactive measures to retain customers.
-""")
+    helping the company take proactive measures to retain customers.
+    """)
 
     # Create three columns for 3D visualizations
     st.title("Application Attributes")
@@ -60,8 +66,6 @@ else:
 
     with col1:
         st.subheader("Plan Retention Strategies Early")
-        
-        # Create 3D scatter plot
         x = np.random.randn(100)
         y = np.random.randn(100)
         z = np.random.randn(100)
@@ -90,8 +94,6 @@ else:
 
     with col2:
         st.subheader("Predict Churn and Churn Probability")
-        
-        # Create 3D surface plot
         x = np.outer(np.linspace(-2, 2, 30), np.ones(30))
         y = x.copy().T
         z = np.cos(x ** 2 + y ** 2)
@@ -111,8 +113,6 @@ else:
 
     with col3:
         st.subheader("Choose between Two Models")
-        
-        # Create 3D line plot
         t = np.linspace(0, 10, 100)
         x = np.cos(t)
         y = np.sin(t)
@@ -139,9 +139,9 @@ else:
         
         st.plotly_chart(fig, use_container_width=True)
 
-    # Add some custom CSS to make the page more colorful
+    # Add custom CSS
     st.markdown("""<style>
         .stApp {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #f0f4f8, #d1e8e0);
         }
-        </style>""", unsafe_allow_html=True)
+    </style>""", unsafe_allow_html=True)
