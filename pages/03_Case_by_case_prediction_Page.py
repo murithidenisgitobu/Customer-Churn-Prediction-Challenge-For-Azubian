@@ -2,6 +2,8 @@ import streamlit as st
 import joblib
 import pandas as pd
 import numpy as np
+from utils import add_logout_button
+
 
 # Set page config
 st.set_page_config(
@@ -9,6 +11,16 @@ st.set_page_config(
     page_title="Telecom Churn Prediction",
     page_icon="📱",
 )
+
+
+# Check authentication
+if 'logged_in' not in st.session_state or not st.session_state['logged_in']:
+    st.warning("Please log in from the home page to access this feature.")
+    st.stop()
+
+# Add logout button
+add_logout_button()
+
 
 # Define categorical options
 REGION_OPTIONS = ['Unknown'] + [
@@ -197,7 +209,7 @@ def main():
         predictions = make_prediction(input_data, models)
         
         if predictions:
-            st.header("Churn Predictions")
+            st.success("Churn Predictions")
             
             # Create columns for each prediction
             col1, col2, col3 = st.columns(3)
@@ -221,13 +233,17 @@ def main():
                 )
             
             # Add interpretation
-            st.subheader("Interpretation")
-            risk_level = "High" if predictions['Ensemble Average'] > 0.5 else "Low"
-            st.write(f"This customer has a **{risk_level} risk** of churning based on the provided data.")
-            
-            # Display input data for verification
-            if st.checkbox("Show input data"):
-                st.write("Input Data Used for Prediction:", input_data)
+        st.subheader("Interpretation")
+        risk_level = "High" if predictions['Ensemble Average'] > 0.5 else "Low"
+
+        if predictions['Ensemble Average'] > 0.5:
+            st.warning(f"This customer has a **{risk_level} risk** of churning based on the provided data.")
+        else:
+            st.success(f"This customer has a **{risk_level} risk** of churning based on the provided data.")
+
+        # Display input data for verification
+        if st.checkbox("Show input data"):
+            st.write("Input Data Used for Prediction:", input_data)
 
 if __name__ == "__main__":
     main()
