@@ -20,7 +20,6 @@ if 'logged_in' not in st.session_state or not st.session_state['logged_in']:
 # Add logout button
 add_logout_button()
 
-
 # Page styling
 st.markdown("""
     <style>
@@ -52,12 +51,21 @@ def load_models():
         st.error(f"Error loading models: {str(e)}")
         return None
 
-def predict_churn(model, features):
-    """Make predictions using the selected model"""
+@st.cache_data(ttl=600)  # Cache predictions for 10 minutes (600 seconds)
+def predict_churn(model_name, features_dict):
+    """Make predictions using the selected model with caching"""
     try:
+        # Convert features dictionary back to DataFrame
+        features = pd.DataFrame(features_dict)
+        
+        # Get the model
+        models = load_models()
+        model = models[model_name]
+        
+        # Make predictions
         prediction = model.predict(features)
         probability = model.predict_proba(features)[:, 1]
-        return prediction, probability
+        return prediction.tolist(), probability.tolist()
     except Exception as e:
         st.error(f"Error making predictions: {str(e)}")
         return None, None
@@ -74,7 +82,7 @@ def clean_features(df):
         
         # Check for missing values
         if df_cleaned.isnull().any().any():
-            st.warning("Warning: Your data contains missing values. Handle them if possible or model will handle them.")
+            st.warning("Warning: Your data contains missing values. Handle them if possible or model will handle them with the average values for the class.")
         
         return df_cleaned
     except Exception as e:
@@ -83,7 +91,6 @@ def clean_features(df):
 
 def convert_prediction_labels(predictions):
     """Convert binary predictions to descriptive labels"""
-    # Corrected mapping: 1 -> 'Churn', 0 -> 'Not Churn'
     return ['Not Churn' if pred == 0 else 'Churn' for pred in predictions]
 
 def format_percentage(value):
@@ -127,9 +134,12 @@ def main():
             )
             
             if st.button('Make Predictions', type='primary'):
-                with st.spinner('Making predictions...'):
-                    # Make predictions
-                    prediction, probability = predict_churn(models[model_name], cleaned_df)
+                with st.spinner('Making predictions... (This may take up to 10 minutes for large datasets)'):
+                    # Convert DataFrame to dictionary for caching
+                    features_dict = cleaned_df.to_dict()
+                    
+                    # Make predictions with caching
+                    prediction, probability = predict_churn(model_name, features_dict)
                     
                     if prediction is not None and probability is not None:
                         # Convert numeric predictions to labels
@@ -165,10 +175,11 @@ def main():
                         
                         # Calculate percentages for metrics
                         total_predictions = len(prediction)
-                        churn_count = sum(prediction == 1)  # Changed from 0 to 1
-                        not_churn_count = sum(prediction == 0)  # Changed from 1 to 0
+                        churn_count = sum(1 for p in prediction if p == 1)
+                        not_churn_count = sum(1 for p in prediction if p == 0)
                         churn_percentage = (churn_count / total_predictions) * 100
                         not_churn_percentage = (not_churn_count / total_predictions) * 100
+                        avg_probability = sum(probability) / len(probability)
                         
                         # Show summary statistics
                         st.subheader('5. Summary Statistics')
@@ -178,7 +189,7 @@ def main():
                             st.metric("Predicted Churns", f"{churn_count} ({churn_percentage:.2f}%)")
                         with col2:
                             st.metric("Predicted Not Churns", f"{not_churn_count} ({not_churn_percentage:.2f}%)")
-                            st.metric("Average Churn Probability", format_percentage(probability.mean()))
+                            st.metric("Average Churn Probability", format_percentage(avg_probability))
 
                         # Add color coding explanation
                         st.info("""
