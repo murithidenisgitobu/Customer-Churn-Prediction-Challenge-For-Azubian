@@ -36,11 +36,3 @@ st.download_button(
     file_name='train_data.csv',
     mime='text/csv',
 )
-
-import os
-
-def load_data():
-    st.write("Current Working Directory:", os.getcwd())  # Print current directory
-    st.write("Trying to read:", 'Data/Train_5k.csv')    # Show file path being used
-    return pd.read_csv('Data/Train_5k.csv')
-load_data()
