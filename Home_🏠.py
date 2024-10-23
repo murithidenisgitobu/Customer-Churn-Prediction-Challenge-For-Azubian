@@ -6,7 +6,9 @@ from streamlit_extras.colored_header import colored_header
 from utils import add_logout_button
 
 # Set page config
-st.set_page_config(page_title="Customer Churn Prediction App", layout="wide")
+st.set_page_config(page_title="Customer Churn Prediction App", 
+                   layout="wide",
+                   page_icon='🏠')
 
 # Define hardcoded credentials
 username = "admin"
@@ -22,6 +24,9 @@ if 'logged_in' not in st.session_state:
 if not st.session_state['logged_in']:
     st.title("Customer Churn Prediction App")
     st.subheader("Login")
+    st.write('Please use the logins below')
+    st.success('Username: admin\n')
+    st.success('Password: password\n')
 
     user_input = st.text_input("Username")
     pass_input = st.text_input("Password", type='password')
