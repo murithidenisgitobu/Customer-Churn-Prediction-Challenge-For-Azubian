@@ -21,7 +21,7 @@ st.markdown('950,000 Rows of the data used to train the models')
 
 @st.cache_data(show_spinner='Data Loading .....')
 def load_data():
-    return pd.read_csv('Data/Train.csv')
+    return pd.read_csv('Data\Train_950k.csv')
 
 # Load and display data
 train_df = load_data()
