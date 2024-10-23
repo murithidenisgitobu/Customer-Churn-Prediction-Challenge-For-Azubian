@@ -3,6 +3,9 @@ import streamlit as st
 import pandas as pd
 from utils import add_logout_button
 
+st.set_page_config(layout='wide',
+                   page_icon='🔂', 
+                   page_title='Data Page')
 # Check authentication
 if 'logged_in' not in st.session_state or not st.session_state['logged_in']:
     st.warning("Please log in from the home page to access this feature.")
