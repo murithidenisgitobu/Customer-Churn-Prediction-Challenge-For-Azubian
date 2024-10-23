@@ -22,7 +22,7 @@ st.success('https://drive.google.com/file/d/1e9LdqRG_L4sXseQQrqFGDaZUlmX49XGj/vi
 # Function to load data
 @st.cache_data(show_spinner='Data Loading .....')
 def load_data():
-    return pd.read_csv(r'Data\Train_5k.csv')
+    return pd.read_csv('Data/Train_5k.csv')
 
 # Load and display data
 train_df = load_data()
@@ -36,3 +36,11 @@ st.download_button(
     file_name='train_data.csv',
     mime='text/csv',
 )
+
+import os
+
+def load_data():
+    st.write("Current Working Directory:", os.getcwd())  # Print current directory
+    st.write("Trying to read:", 'Data/Train_5k.csv')    # Show file path being used
+    return pd.read_csv('Data/Train_5k.csv')
+load_data()
