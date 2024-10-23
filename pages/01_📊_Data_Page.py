@@ -22,7 +22,7 @@ st.success('https://drive.google.com/file/d/1e9LdqRG_L4sXseQQrqFGDaZUlmX49XGj/vi
 # Function to load data
 @st.cache_data(show_spinner='Data Loading .....')
 def load_data():
-    return pd.read_csv('Data\Train_5k.csv')
+    return pd.read_csv(r'Data\Train_5k.csv')
 
 # Load and display data
 train_df = load_data()
