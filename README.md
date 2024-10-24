@@ -34,7 +34,7 @@ This challenge is for an African telecommunications company that provides custom
 ## API Reference
 
 #### Streamlit App Deployed on Render 
-(Takes approximately 3 minutes to load - Be patient, we are using the free package)
+(Takes approximately 3 minutes to load - Be patient, we used the free package)
 ```http
   https://customer-churn-prediction-challenge-for-j4n9.onrender.com/
 ```
